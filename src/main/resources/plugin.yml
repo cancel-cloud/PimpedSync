@@ -1,0 +1,10 @@
+name: PimpedSync
+main: de.cancelcloud.PimpedSync
+version: ${version}
+prefix: ${name}
+website: ${website}
+author: Cancelcloud
+description: "This super cool plugin syncs player data between servers, made by Mr. Cancel"
+api-version: 1.18
+depend:
+  - JET-Paper
