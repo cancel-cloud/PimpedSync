@@ -1,5 +1,6 @@
 package de.cancelcloud
 
+import de.cancelcloud.commands.InvseeInterChange
 import de.cancelcloud.config.GeneralConfig
 import de.cancelcloud.database.InventoryContent.createTables
 import de.cancelcloud.listeners.JoinListener
@@ -11,7 +12,7 @@ import de.jet.paper.structure.app.AppCompanion
 import org.bukkit.ChatColor
 
 class PimpedSync : App() {
-    override val appCache = PimpedCache()
+    override val appCache = PimpedCache
     override val appIdentity = "PimpedSync"
     override val appLabel = "PimpedSync"
     override val companion = Companion
@@ -25,6 +26,7 @@ class PimpedSync : App() {
 
         add(JoinListener())
         add(QuitListener())
+        add(InvseeInterChange())
 
         mainLog.info(ChatColor.GREEN.toString() + "Hello from PimpSync!")
     }

@@ -4,7 +4,7 @@ import de.jet.paper.structure.app.AppCache
 import de.jet.paper.structure.app.cache.CacheDepthLevel
 import java.util.*
 
-class PimpedCache : AppCache {
+object PimpedCache : AppCache {
     override fun dropEntityData(entityIdentity: UUID, dropDepth: CacheDepthLevel) {
 
     }
@@ -12,4 +12,6 @@ class PimpedCache : AppCache {
     override fun dropEverything(dropDepth: CacheDepthLevel) {
 
     }
+
+    var dataBasePlayers = emptyList<String>()
 }
