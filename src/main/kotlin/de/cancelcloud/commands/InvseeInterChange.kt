@@ -7,6 +7,7 @@ import de.cancelcloud.utils.Base64
 import de.jet.jvm.extension.tryOrNull
 import de.jet.paper.extension.display.notification
 import de.jet.paper.extension.display.ui.buildPanel
+import de.jet.paper.extension.display.ui.item
 import de.jet.paper.extension.display.ui.skull
 import de.jet.paper.extension.paper.*
 import de.jet.paper.extension.tasky.async
@@ -18,13 +19,18 @@ import de.jet.paper.structure.command.completion.component.CompletionAsset
 import de.jet.paper.tool.display.message.Transmission
 import de.jet.paper.tool.timing.tasky.TemporalAdvice
 import net.kyori.adventure.text.Component
+import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
+import kotlin.system.measureTimeMillis
 import kotlin.time.Duration.Companion.seconds
+import kotlin.time.ExperimentalTime
+import kotlin.time.measureTime
 
 /**
  * PERMISSION = PimpedSync.interchange.invsee
  */
+
 class InvseeInterChange : StructuredInterchange("invsee", buildInterchangeStructure {
 
 
@@ -68,6 +74,8 @@ class InvseeInterChange : StructuredInterchange("invsee", buildInterchangeStruct
     branch {
         addContent(completionAsset)
         concludedExecution {
+            @OptIn(ExperimentalTime::class)
+            measureTime {
             val executor = this.executor as Player
             val player = tryOrNull { InventoryContent.PlayerData(getInput(0, completionAsset).uniqueId, getInput(0, completionAsset).name,
                 Base64.itemStackArrayToBase64(getInput(0, completionAsset).inventory.contents as Array<ItemStack>)!!
@@ -83,14 +91,17 @@ class InvseeInterChange : StructuredInterchange("invsee", buildInterchangeStruct
                         this[index + 9] = itemStack
                     }
                 }
+                set(0..8, Material.GRAY_STAINED_GLASS_PANE.item {
+                    blankLabel()
+                })
 
                 //If player is online:
                 onClick {
-                    val player = getPlayer(player.user)
-                    if (player != null) {
+                    val user = getPlayer(player.user)
+                    if (user != null) {
                         async(TemporalAdvice.Companion.delayed(.1.seconds)) {
                             sync {
-                                player.inventory.contents = it.inventoryView.topInventory.contents!!.drop(9).toTypedArray()
+                                user.inventory.contents = it.inventoryView.topInventory.contents!!.drop(9).toTypedArray()
                             }
                         }
                     }
@@ -107,6 +118,10 @@ class InvseeInterChange : StructuredInterchange("invsee", buildInterchangeStruct
 
             }
             inventory.display(executor)
+            }.let { time ->
+                "§7Inventory of §a${getInput(0)}§7 loaded in §a${time}§7.".notification(Transmission.Level.INFO, executor).display()
+            }
+
 
         }
     }

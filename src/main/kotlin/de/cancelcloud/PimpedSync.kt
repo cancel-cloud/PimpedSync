@@ -9,7 +9,9 @@ import de.jet.jvm.tool.smart.identification.Identity
 import de.jet.paper.extension.mainLog
 import de.jet.paper.structure.app.App
 import de.jet.paper.structure.app.AppCompanion
+import net.kyori.adventure.text.Component
 import org.bukkit.ChatColor
+import org.bukkit.entity.Player
 
 class PimpedSync : App() {
     override val appCache = PimpedCache
@@ -32,6 +34,9 @@ class PimpedSync : App() {
     }
 
     override fun bye() {
+        server.onlinePlayers.forEach{player ->
+            player.kick(Component.text(ChatColor.RED.toString() + "Server restarting!"))
+        }
         mainLog.info(ChatColor.RED.toString() + "Bye from PimpSync!")
     }
 
