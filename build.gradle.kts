@@ -7,7 +7,7 @@ plugins {
 }
 
 group = "de.cancelcloud"
-version = "1.0-SNAPSHOT"
+version = "1.0"
 
 val exposedVersion: String by project
 var host = "github.com/cancel-cloud/PimpedSync"

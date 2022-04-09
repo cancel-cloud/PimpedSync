@@ -8,3 +8,7 @@ description: "This super cool plugin syncs player data between servers, made by 
 api-version: 1.18
 depend:
   - JET-Paper
+
+commands:
+  invsee:
+    description: get the inventory of an online or offline player
