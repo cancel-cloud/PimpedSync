@@ -5,6 +5,7 @@ import de.cancelcloud.utils.Base64
 import de.jet.jvm.extension.isNull
 import de.jet.paper.extension.mainLog
 import de.jet.paper.structure.app.event.EventListener
+import net.kyori.adventure.text.Component
 import org.bukkit.event.EventHandler
 import org.bukkit.event.player.PlayerJoinEvent
 import kotlin.time.ExperimentalTime
@@ -15,7 +16,7 @@ class JoinListener : EventListener() {
     @EventHandler
     fun onJoin(event: PlayerJoinEvent) {
         val player = event.player
-        event.joinMessage()
+        event.joinMessage(Component.text(""))
         @OptIn(ExperimentalTime::class)
         measureTime {
             //check if player exists in database

@@ -72,57 +72,61 @@ class InvseeInterChange : StructuredInterchange("invsee", buildInterchangeStruct
 
 
     branch {
-        addContent(completionAsset)
-        concludedExecution {
-            @OptIn(ExperimentalTime::class)
-            measureTime {
-            val executor = this.executor as Player
-            val player = tryOrNull { InventoryContent.PlayerData(getInput(0, completionAsset).uniqueId, getInput(0, completionAsset).name,
-                Base64.itemStackArrayToBase64(getInput(0, completionAsset).inventory.contents as Array<ItemStack>)!!
-            ) } ?: InventoryContent.getPlayerData(getInput(0))
-            val inventory = buildPanel(6, false) {
-                this.label = Component.text("§a§lInventory of ${player!!.name}")
-                this.identity = PimpedSync.identity
-                this.icon = skull(player.user)
-                //set pannel contents
-                Base64.itemStackArrayFromBase64(player.inventory).forEachIndexed { index, itemStack ->
-                    if (itemStack != null){
-                        //index bezieht sich auf das Pannel
-                        this[index + 9] = itemStack
-                    }
-                }
-                set(0..8, Material.GRAY_STAINED_GLASS_PANE.item {
-                    blankLabel()
-                })
+        addContent("view")
 
-                //If player is online:
-                onClick {
-                    val user = getPlayer(player.user)
-                    if (user != null) {
-                        async(TemporalAdvice.Companion.delayed(.1.seconds)) {
-                            sync {
-                                user.inventory.contents = it.inventoryView.topInventory.contents!!.drop(9).toTypedArray()
+        branch {
+            addContent(completionAsset)
+            concludedExecution {
+                @OptIn(ExperimentalTime::class)
+                measureTime {
+                    val executor = this.executor as Player
+                    val player = tryOrNull { InventoryContent.PlayerData(getInput(1, completionAsset).uniqueId, getInput(1, completionAsset).name,
+                        Base64.itemStackArrayToBase64(getInput(1, completionAsset).inventory.contents as Array<ItemStack>)!!
+                    ) } ?: InventoryContent.getPlayerData(getInput(1))
+                    val inventory = buildPanel(6, false) {
+                        this.label = Component.text("§a§lInventory of ${player!!.name}")
+                        this.identity = PimpedSync.identity
+                        this.icon = skull(player.user)
+                        //set pannel contents
+                        Base64.itemStackArrayFromBase64(player.inventory).forEachIndexed { index, itemStack ->
+                            if (itemStack != null){
+                                //index bezieht sich auf das Pannel
+                                this[index + 9] = itemStack
                             }
                         }
+                        set(0..8, Material.GRAY_STAINED_GLASS_PANE.item {
+                            blankLabel()
+                        })
+
+                        //If player is online:
+                        onClick {
+                            val user = getPlayer(player.user)
+                            if (user != null) {
+                                async(TemporalAdvice.Companion.delayed(.1.seconds)) {
+                                    sync {
+                                        user.inventory.contents = it.inventoryView.topInventory.contents!!.drop(9).toTypedArray()
+                                    }
+                                }
+                            }
+                        }
+
+                        //If player is offline
+                        onClose {
+                            if (getPlayer(player.user) == null) {
+                                InventoryContent.dbRequestOfflinePlayer(getOfflinePlayer(player.name),
+                                    it.inventory.contents?.drop(9)?.toTypedArray() as Array<ItemStack>
+                                )
+                            }
+                        }
+
                     }
+                    inventory.display(executor)
+                }.let { time ->
+                    "§7Inventory of §a${getInput(1)}§7 loaded in §a${time}§7.".notification(Transmission.Level.INFO, executor).display()
                 }
 
-                //If player is offline
-                onClose {
-                    if (getPlayer(player.user) == null) {
-                        InventoryContent.dbRequestOfflinePlayer(getOfflinePlayer(player.name),
-                            it.inventory.contents?.drop(9)?.toTypedArray() as Array<ItemStack>
-                        )
-                    }
-                }
 
             }
-            inventory.display(executor)
-            }.let { time ->
-                "§7Inventory of §a${getInput(0)}§7 loaded in §a${time}§7.".notification(Transmission.Level.INFO, executor).display()
-            }
-
-
         }
     }
 
