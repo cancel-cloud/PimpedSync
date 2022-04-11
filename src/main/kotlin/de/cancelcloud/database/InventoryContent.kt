@@ -80,7 +80,7 @@ object InventoryContent {
             }
             else -> {
                 transaction(database) {
-                    InventoryContentTable.update {
+                    InventoryContentTable.update({ InventoryContentTable.user eq user}) {
                         it[InventoryContentTable.user] = user
                         it[InventoryContentTable.name] = name
                         it[InventoryContentTable.inventory] = inventory!!
