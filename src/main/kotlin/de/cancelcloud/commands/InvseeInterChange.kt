@@ -104,16 +104,16 @@ class InvseeInterChange : StructuredInterchange("invsee", buildInterchangeStruct
                 measureTime {
                     val executor = this.executor as Player
 
-                    val target = tryOrNull {
+                    val target = try {
                         InventoryContent.PlayerData(
                             getInput(1, completionAsset).uniqueId,
                             getInput(1, completionAsset).name,
-                            Base64.itemStackArrayToBase64(
-                                getInput(1, completionAsset)
-                                    .inventory.contents as Array<ItemStack>
-                            )!!
+                            Base64.itemStackArrayToBase64(getInput(1, completionAsset).inventory.contents.forceCast())!!
                         )
-                    } ?: InventoryContent.getPlayerData(getInput(1))
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                        InventoryContent.getPlayerData(getInput(1))
+                    }
 
                     val targetOfflinePlayer = target?.user?.let { getOfflinePlayer(it) }
 
