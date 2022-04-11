@@ -1,6 +1,7 @@
 package de.cancelcloud.listeners
 
 import de.cancelcloud.database.InventoryContent
+import de.cancelcloud.database.RequestType.UPDATE
 import de.jet.paper.extension.mainLog
 import de.jet.paper.structure.app.event.EventListener
 import org.bukkit.event.EventHandler
@@ -17,9 +18,11 @@ class QuitListener : EventListener() {
 
         @OptIn(ExperimentalTime::class)
         measureTime {
-            InventoryContent.dbRequestPlayer(player, "update")
+
+            InventoryContent.databaseAction(player, UPDATE)
 
             player.inventory.clear()
+
         }.let {
             mainLog.info("§7[§eQuitListener§7]§r Player §2${player.name}§r has been saved in §a${it.toString(
                 DurationUnit.MILLISECONDS, 2)}.")

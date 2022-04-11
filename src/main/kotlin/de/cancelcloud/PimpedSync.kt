@@ -31,12 +31,15 @@ class PimpedSync : App() {
         add(InvseeInterChange())
 
         mainLog.info(ChatColor.GREEN.toString() + "Hello from PimpSync!")
+
     }
 
     override fun bye() {
+
         server.onlinePlayers.forEach{player ->
             player.kick(Component.text(ChatColor.RED.toString() + "Server restarting!"))
         }
+
         mainLog.info(ChatColor.RED.toString() + "Bye from PimpSync!")
     }
 

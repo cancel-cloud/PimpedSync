@@ -1,6 +1,7 @@
 package de.cancelcloud.listeners
 
 import de.cancelcloud.database.InventoryContent
+import de.cancelcloud.database.RequestType.INSERT
 import de.cancelcloud.utils.Base64
 import de.jet.jvm.extension.isNull
 import de.jet.paper.extension.mainLog
@@ -18,17 +19,21 @@ class JoinListener : EventListener() {
     fun onJoin(event: PlayerJoinEvent) {
         val player = event.player
         event.joinMessage(Component.text(""))
+
         @OptIn(ExperimentalTime::class)
         measureTime {
+
             //check if player exists in database
             if(InventoryContent.getPlayerData(player.uniqueId)?.user.isNull) {
-                InventoryContent.dbRequestPlayer(player, "insert")
+                InventoryContent.databaseAction(player, INSERT)
             }
 
             player.inventory.contents =
                 Base64.itemStackArrayFromBase64(InventoryContent.getPlayerData(player.uniqueId)!!.inventory)
+
         }.let {
             mainLog.info("§7[§eJoinListener§7]§r §2${player.name}§r joined the server. Fetched inventory in: §a${it.toString(DurationUnit.MILLISECONDS, 2)}")
         }
+
     }
 }

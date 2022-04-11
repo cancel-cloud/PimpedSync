@@ -1,18 +1,18 @@
 package de.cancelcloud.database
 
 import de.cancelcloud.config.GeneralConfig
+import de.cancelcloud.database.RequestType.INSERT
+import de.cancelcloud.database.RequestType.UPDATE
 import de.cancelcloud.utils.Base64
 import de.jet.jvm.extension.classType.UUID
-import de.jet.paper.extension.paper.getPlayer
+import de.jet.jvm.extension.forceCast
 import org.bukkit.OfflinePlayer
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import org.jetbrains.exposed.sql.*
-import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.transactions.transaction
 
 object InventoryContent {
-
 
     object InventoryContentTable : Table("inventory_content") {
         val user = uuid("user")
@@ -41,6 +41,7 @@ object InventoryContent {
             )
         }.firstOrNull()
     }
+
     fun getPlayerData(name: String) = transaction(db = database) {
         InventoryContentTable.select { InventoryContentTable.name eq name }.map {
             PlayerData(
@@ -51,8 +52,8 @@ object InventoryContent {
         }.firstOrNull()
     }
 
-    //get only all player names from database
-    fun getAllPlayerNames() = transaction(db = database) {
+    // get only all player names from database
+    fun databaseAllNames() = transaction(db = database) {
         InventoryContentTable.selectAll().map {
             it[InventoryContentTable.name]
         }
@@ -63,28 +64,23 @@ object InventoryContent {
         GeneralConfig.databaseConfig.connect()
     }
 
-    fun dbRequestPlayer(player: Player, mode: String) = transaction(db = database) {
+    fun databaseAction(player: Player, requestType: RequestType) = transaction(db = database) {
         val user = player.uniqueId
         val name = player.name
-        val inventory = Base64.itemStackArrayToBase64(player.inventory.contents as Array<ItemStack>)
+        val inventory = Base64.itemStackArrayToBase64(player.inventory.contents.forceCast())
 
-        when (mode) {
-            "insert" -> {
-                transaction(database) {
-                    InventoryContentTable.insert {
-                        it[InventoryContentTable.user] = user
-                        it[InventoryContentTable.name] = name
-                        it[InventoryContentTable.inventory] = inventory!!
-                    }
+        when (requestType) {
+            INSERT -> {
+                InventoryContentTable.insert {
+                    it[InventoryContentTable.user] = user
+                    it[InventoryContentTable.name] = name
+                    it[InventoryContentTable.inventory] = inventory!!
                 }
             }
-            else -> {
-                transaction(database) {
-                    InventoryContentTable.update({ InventoryContentTable.user eq user}) {
-                        it[InventoryContentTable.user] = user
-                        it[InventoryContentTable.name] = name
-                        it[InventoryContentTable.inventory] = inventory!!
-                    }
+            UPDATE -> {
+                InventoryContentTable.update({ InventoryContentTable.user eq user }) {
+                    it[InventoryContentTable.name] = name
+                    it[InventoryContentTable.inventory] = inventory!!
                 }
             }
         }
@@ -92,18 +88,16 @@ object InventoryContent {
 
     }
 
-    fun dbRequestOfflinePlayer(player: OfflinePlayer, inventory: Array<ItemStack>) = transaction(db = database) {
-        val user = player.uniqueId
-        val name = player.name
-        val inventory = Base64.itemStackArrayToBase64(inventory)
+    fun databasePush(offlinePlayer: OfflinePlayer, inventorContent: Array<ItemStack>) = transaction(db = database) {
+        val user = offlinePlayer.uniqueId
+        val name = offlinePlayer.name
+        val inventory = Base64.itemStackArrayToBase64(inventorContent)
 
-        transaction(database) {
-            InventoryContentTable.update ({ InventoryContentTable.user eq user}) {
-                it[InventoryContentTable.user] = user
-                it[InventoryContentTable.name] = name!!
-                it[InventoryContentTable.inventory] = inventory!!
-            }
+        InventoryContentTable.update ({ InventoryContentTable.user eq user }) {
+            it[InventoryContentTable.name] = name!!
+            it[InventoryContentTable.inventory] = inventory!!
         }
+
     }
 
 }
