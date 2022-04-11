@@ -139,7 +139,7 @@ class InvseeInterChange : StructuredInterchange("invsee", buildInterchangeStruct
 
                                 sync(Companion.delayed(.1.seconds)) {
                                     targetPlayer.inventory.contents =
-                                        it.origin.clickedInventory?.contents?.drop(0)?.toTypedArray() ?: emptyArray()
+                                        it.origin.clickedInventory?.contents?.drop(9)?.toTypedArray() ?: emptyArray()
                                 }
 
                             }
