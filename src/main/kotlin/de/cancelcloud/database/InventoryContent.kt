@@ -49,7 +49,9 @@ object InventoryContent {
                 name = it[InventoryContentTable.name],
                 inventory = it[InventoryContentTable.inventory]
             )
-        }.firstOrNull()
+        }.firstOrNull().also {
+            println("DATA-RECEIVED for '$name' === $it")
+        }
     }
 
     // get only all player names from database

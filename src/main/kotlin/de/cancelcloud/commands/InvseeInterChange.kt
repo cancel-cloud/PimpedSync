@@ -3,8 +3,6 @@ package de.cancelcloud.commands
 import de.cancelcloud.PimpedCache
 import de.cancelcloud.PimpedSync
 import de.cancelcloud.database.InventoryContent
-import de.cancelcloud.database.InventoryContent.InventoryContentTable.inventory
-import de.cancelcloud.database.InventoryContent.InventoryContentTable.user
 import de.cancelcloud.utils.Base64
 import de.jet.jvm.extension.forceCast
 import de.jet.jvm.extension.tryOrNull
@@ -15,21 +13,18 @@ import de.jet.paper.extension.display.ui.skull
 import de.jet.paper.extension.paper.getOfflinePlayer
 import de.jet.paper.extension.paper.getPlayer
 import de.jet.paper.extension.paper.server
-import de.jet.paper.extension.tasky.async
 import de.jet.paper.extension.tasky.sync
 import de.jet.paper.structure.command.InterchangeUserRestriction
 import de.jet.paper.structure.command.StructuredInterchange
 import de.jet.paper.structure.command.completion.buildInterchangeStructure
 import de.jet.paper.structure.command.completion.component.CompletionAsset
 import de.jet.paper.tool.display.message.Transmission
-import de.jet.paper.tool.timing.tasky.TemporalAdvice
 import de.jet.paper.tool.timing.tasky.TemporalAdvice.Companion
 import de.jet.unfold.extension.asStyledComponent
 import de.jet.unfold.text
 import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.Material
 import org.bukkit.entity.Player
-import org.bukkit.inventory.ItemStack
 import kotlin.time.Duration.Companion.seconds
 import kotlin.time.DurationUnit
 import kotlin.time.ExperimentalTime
@@ -104,16 +99,14 @@ class InvseeInterChange : StructuredInterchange("invsee", buildInterchangeStruct
                 measureTime {
                     val executor = this.executor as Player
 
-                    val target = try {
+                    val target = tryOrNull {
                         InventoryContent.PlayerData(
                             getInput(1, completionAsset).uniqueId,
                             getInput(1, completionAsset).name,
                             Base64.itemStackArrayToBase64(getInput(1, completionAsset).inventory.contents.forceCast())!!
                         )
-                    } catch (e: Exception) {
-                        e.printStackTrace()
-                        InventoryContent.getPlayerData(getInput(1))
-                    }
+                    } ?: InventoryContent.getPlayerData(getInput(1))
+
 
                     val targetOfflinePlayer = target?.user?.let { getOfflinePlayer(it) }
 
