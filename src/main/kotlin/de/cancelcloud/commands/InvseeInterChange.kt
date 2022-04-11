@@ -20,7 +20,12 @@ import de.jet.paper.structure.command.completion.buildInterchangeStructure
 import de.jet.paper.structure.command.completion.component.CompletionAsset
 import de.jet.paper.tool.display.message.Transmission
 import de.jet.paper.tool.timing.tasky.TemporalAdvice
+import de.jet.unfold.extension.asStyledComponent
+import de.jet.unfold.extension.asStyledString
+import de.jet.unfold.text
 import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.format.NamedTextColor
+import net.kyori.adventure.text.format.TextColor
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
@@ -37,9 +42,16 @@ class InvseeInterChange : StructuredInterchange("invsee", buildInterchangeStruct
 
 
     concludedExecution {
-        "§7This §a§lPimpedSync§7 App from §6Cancelcloud§7 was developed with §eJET Framework§7!"
+        "<gray>This <green><bold>PimpedSync</bold><gray> App from <gold>Cancelcloud<gray> was developed with <yellow>JET Framework<gray>!"
             .notification(Transmission.Level.INFO, executor)
             .display()
+
+        /*
+        "<rainbow>REGENBOGEN</rainbow>"
+        "Dieser Text hat <gradient:#222:#444>einen Gradient</gradient> hinzugefügt!"
+
+         */
+
     }
 
     val completionAsset = CompletionAsset(
@@ -70,10 +82,10 @@ class InvseeInterChange : StructuredInterchange("invsee", buildInterchangeStruct
             concludedExecution {
                 if (getInput(1) == "clear") {
                     PimpedCache.dataBasePlayers = emptyList()
-                    "§7Cache cleared.".notification(Transmission.Level.INFO, executor).display()
+                    "<gray>Cache cleared<reset>.".notification(Transmission.Level.INFO, executor).display()
                 } else {
                     InventoryContent.getAllPlayerNames()
-                    "§7Cache updated.".notification(Transmission.Level.INFO, executor).display()
+                    "<gray>Cache updated<reset>.".notification(Transmission.Level.INFO, executor).display()
                 }
             }
         }
@@ -102,7 +114,7 @@ class InvseeInterChange : StructuredInterchange("invsee", buildInterchangeStruct
                     } ?: InventoryContent.getPlayerData(getInput(1))
 
                     val inventory = buildPanel(6, false) {
-                        this.label = Component.text("§a§lInventory of ${player!!.name}")
+                        this.label = "<green><gray>Inventory of ${player!!.name}".asStyledComponent
                         this.identity = PimpedSync.identity
                         this.icon = skull(player.user)
                         //set panel contents
@@ -118,11 +130,11 @@ class InvseeInterChange : StructuredInterchange("invsee", buildInterchangeStruct
 
                         //If player is online:
                         onClick {
-                            val user = getPlayer(player.user)
-                            if (user != null) {
+                            val user = getOfflinePlayer(player.user)
+                            if (user.isOnline) {
                                 async(TemporalAdvice.Companion.delayed(.1.seconds)) {
                                     sync {
-                                        user.inventory.contents =
+                                        getPlayer(user.uniqueId)!!.inventory.contents =
                                             it.inventoryView.topInventory.contents!!.drop(9).toTypedArray()
                                     }
                                 }
@@ -131,7 +143,7 @@ class InvseeInterChange : StructuredInterchange("invsee", buildInterchangeStruct
 
                         //If player is offline
                         onClose {
-                            if (getPlayer(player.user) == null) {
+                            if (getPlayer(player.user)?.isOnline == false) {
                                 InventoryContent.dbRequestOfflinePlayer(
                                     getOfflinePlayer(player.name),
                                     it.inventory.contents?.drop(9)?.toTypedArray() as Array<ItemStack>
@@ -142,15 +154,23 @@ class InvseeInterChange : StructuredInterchange("invsee", buildInterchangeStruct
                     }
                     inventory.display(executor)
                 }.let { time ->
-                    "§7Inventory of §a${getInput(1)}§7 loaded in §a${
-                        time.toString(
-                            DurationUnit.MILLISECONDS,
-                            2
-                        )
-                    }§7.".notification(Transmission.Level.INFO, executor).display()
+
+                    text {
+
+                        text("Inventory of ").color(NamedTextColor.GRAY)
+                        text(getInput(1)).color(NamedTextColor.GREEN)
+                        text(" loaded in ").color(NamedTextColor.GRAY)
+                        text(time.toString(DurationUnit.MILLISECONDS, 2)).color(NamedTextColor.GREEN)
+                        text(".").color(NamedTextColor.GRAY)
+                        /*Or you could use something like that:
+                        text(".").color(TextColor.color(123, 213, 231))
+                        text(".").color(TextColor.fromHexString("#222"))
+
+                         */
+
+
+                    }.notification(Transmission.Level.INFO, executor).display()
                 }
-
-
             }
         }
     }

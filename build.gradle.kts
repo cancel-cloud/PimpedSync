@@ -35,8 +35,9 @@ dependencies {
 
 
     //JET
-    implementation("com.github.TheFruxz.JET:jet-jvm:1.0-PRE-5.1") // JET-JVM
-    implementation("com.github.TheFruxz.JET:jet-paper:1.0-PRE-5.1") // JET-Minecraft
+    implementation("com.github.TheFruxz.JET:jet-jvm:1.0-PRE-6.0.1") // JET-JVM
+    implementation("com.github.TheFruxz.JET:jet-paper:1.0-PRE-6.0.1") // JET-Minecraft
+    implementation("com.github.TheFruxz.JET:jet-unfold:1.0-PRE-6.0.1") // JET-Unfold
 }
 
 tasks.withType<KotlinCompile> {
