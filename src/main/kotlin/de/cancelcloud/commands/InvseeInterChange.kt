@@ -127,8 +127,12 @@ class InvseeInterChange : StructuredInterchange("invsee", buildInterchangeStruct
 
                         // If player is online:
                         onClick {
-                            if (targetOfflinePlayer != null && targetOfflinePlayer.isOnline) {
-                                val targetPlayer = targetOfflinePlayer.player!!
+                            println("TRIGGER-ZONE CLICK ===============================")
+                            if ((targetOfflinePlayer != null).also { print("C1B1 = $it") } && (targetOfflinePlayer?.isOnline == true).also { println("C2B1 = $it") }) {
+                                println("B1 = true")
+                                val targetPlayer = targetOfflinePlayer!!.player!!
+
+                                println("targetPlayer ${targetPlayer.name}")
 
                                 sync(Companion.delayed(.1.seconds)) {
                                     targetPlayer.inventory.contents =
@@ -136,6 +140,7 @@ class InvseeInterChange : StructuredInterchange("invsee", buildInterchangeStruct
                                 }
 
                             }
+                            println("TRIGGER-ZONE END ===============================")
                         }
 
                         // If player is offline

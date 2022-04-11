@@ -25,7 +25,7 @@ object InventoryContent {
     data class PlayerData(
         val user: UUID,
         val name: String,
-        val inventory: String
+        val inventory: String,
     )
 
     fun createTables() = transaction(database) {
