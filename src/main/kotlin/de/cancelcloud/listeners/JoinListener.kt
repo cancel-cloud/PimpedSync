@@ -8,6 +8,7 @@ import de.jet.paper.structure.app.event.EventListener
 import net.kyori.adventure.text.Component
 import org.bukkit.event.EventHandler
 import org.bukkit.event.player.PlayerJoinEvent
+import kotlin.time.DurationUnit
 import kotlin.time.ExperimentalTime
 import kotlin.time.measureTime
 
@@ -27,7 +28,7 @@ class JoinListener : EventListener() {
             player.inventory.contents =
                 Base64.itemStackArrayFromBase64(InventoryContent.getPlayerData(player.uniqueId)!!.inventory)
         }.let {
-            mainLog.info("§7[§eJoinListener§7]§r §2${player.name}§r joined the server. Fetched inventory in: §a$it")
+            mainLog.info("§7[§eJoinListener§7]§r §2${player.name}§r joined the server. Fetched inventory in: §a${it.toString(DurationUnit.MILLISECONDS, 2)}")
         }
     }
 }

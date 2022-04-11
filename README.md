@@ -17,6 +17,29 @@ There you can change the:
 - user
 - password
 
+**Important:**
+<br>
+If you want to use `localhost` you'll have to write `127.0.0.1`.
+
+e.g.:
+```json
+{
+  "url": "jdbc:mysql://127.0.0.1:3306/minecraft",
+  "driver": "com.mysql.jdbc.Driver",
+  "user": "root",
+  "password": "password"
+}
+```
+or
+```json
+{
+  "url": "jdbc:mysql://127.0.0.1:3306/minecraft",
+  "driver": "org.postgresql.Driver",
+  "user": "root",
+  "password": "password"
+}
+```
+
 ---
 ## How to get help
 Simply click [this](https://github.com/cancel-cloud/PimpedSync/issues/new) and ill try to help you / fix the problem.

@@ -5,6 +5,7 @@ import de.jet.paper.extension.mainLog
 import de.jet.paper.structure.app.event.EventListener
 import org.bukkit.event.EventHandler
 import org.bukkit.event.player.PlayerQuitEvent
+import kotlin.time.DurationUnit
 import kotlin.time.ExperimentalTime
 import kotlin.time.measureTime
 
@@ -20,7 +21,8 @@ class QuitListener : EventListener() {
 
             player.inventory.clear()
         }.let {
-            mainLog.info("§7[§eQuitListener§7]§r Player §2${player.name}§r has been saved in §a${it}.")
+            mainLog.info("§7[§eQuitListener§7]§r Player §2${player.name}§r has been saved in §a${it.toString(
+                DurationUnit.MILLISECONDS, 2)}.")
         }
 
     }
