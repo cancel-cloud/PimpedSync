@@ -112,7 +112,7 @@ class InvseeInterChange : StructuredInterchange("invsee", buildInterchangeStruct
 
                     buildPanel(6, false) {
                         this.label = "<green><gray>Inventory of ${target!!.name}".asStyledComponent
-                        this.identity = PimpedSync.identity
+                        this.identity = "${target.user}"
                         this.icon = skull(target.user)
                         //set panel contents
                         Base64.itemStackArrayFromBase64(target.inventory).forEachIndexed { index, itemStack ->
