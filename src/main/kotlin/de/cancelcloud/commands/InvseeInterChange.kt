@@ -4,6 +4,7 @@ import de.cancelcloud.PimpedCache
 import de.cancelcloud.PimpedSync
 import de.cancelcloud.database.InventoryContent
 import de.cancelcloud.utils.Base64
+import de.jet.jvm.extension.forceCast
 import de.jet.jvm.extension.tryOrNull
 import de.jet.paper.extension.display.notification
 import de.jet.paper.extension.display.ui.buildPanel
@@ -12,23 +13,18 @@ import de.jet.paper.extension.display.ui.skull
 import de.jet.paper.extension.paper.getOfflinePlayer
 import de.jet.paper.extension.paper.getPlayer
 import de.jet.paper.extension.paper.server
-import de.jet.paper.extension.tasky.async
 import de.jet.paper.extension.tasky.sync
 import de.jet.paper.structure.command.InterchangeUserRestriction
 import de.jet.paper.structure.command.StructuredInterchange
 import de.jet.paper.structure.command.completion.buildInterchangeStructure
 import de.jet.paper.structure.command.completion.component.CompletionAsset
 import de.jet.paper.tool.display.message.Transmission
-import de.jet.paper.tool.timing.tasky.TemporalAdvice
+import de.jet.paper.tool.timing.tasky.TemporalAdvice.Companion
 import de.jet.unfold.extension.asStyledComponent
-import de.jet.unfold.extension.asStyledString
 import de.jet.unfold.text
-import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
-import net.kyori.adventure.text.format.TextColor
 import org.bukkit.Material
 import org.bukkit.entity.Player
-import org.bukkit.inventory.ItemStack
 import kotlin.time.Duration.Companion.seconds
 import kotlin.time.DurationUnit
 import kotlin.time.ExperimentalTime
@@ -60,7 +56,7 @@ class InvseeInterChange : StructuredInterchange("invsee", buildInterchangeStruct
         true,
         //ist die eingabe richtig? => ob der name in der liste enthalten ist
         check = { input, ignoreCase ->
-            (server.onlinePlayers.map { it.name } + InventoryContent.getAllPlayerNames()).any {
+            (server.onlinePlayers.map { it.name } + InventoryContent.databaseAllNames()).any {
                 it.equals(
                     input,
                     ignoreCase
@@ -70,7 +66,7 @@ class InvseeInterChange : StructuredInterchange("invsee", buildInterchangeStruct
         //transformiert die Eingabe zu einem Objekt (Spielername => Spieler)
         transformer = { input: String -> getPlayer(input) },
         //welche Eingabe soll die Liste anzeigen
-        generator = { server.onlinePlayers.map { it.name } + InventoryContent.getAllPlayerNames() }
+        generator = { server.onlinePlayers.map { it.name } + InventoryContent.databaseAllNames() }
     )
 
     branch {
@@ -84,7 +80,7 @@ class InvseeInterChange : StructuredInterchange("invsee", buildInterchangeStruct
                     PimpedCache.dataBasePlayers = emptyList()
                     "<gray>Cache cleared<reset>.".notification(Transmission.Level.INFO, executor).display()
                 } else {
-                    InventoryContent.getAllPlayerNames()
+                    InventoryContent.databaseAllNames()
                     "<gray>Cache updated<reset>.".notification(Transmission.Level.INFO, executor).display()
                 }
             }
@@ -93,6 +89,7 @@ class InvseeInterChange : StructuredInterchange("invsee", buildInterchangeStruct
 
 
     branch {
+
         addContent("view")
 
         branch {
@@ -102,23 +99,23 @@ class InvseeInterChange : StructuredInterchange("invsee", buildInterchangeStruct
                 measureTime {
                     val executor = this.executor as Player
 
-                    val player = tryOrNull {
+                    val target = tryOrNull {
                         InventoryContent.PlayerData(
                             getInput(1, completionAsset).uniqueId,
                             getInput(1, completionAsset).name,
-                            Base64.itemStackArrayToBase64(
-                                getInput(1, completionAsset)
-                                    .inventory.contents as Array<ItemStack>
-                            )!!
+                            Base64.itemStackArrayToBase64(getInput(1, completionAsset).inventory.contents.forceCast())!!
                         )
                     } ?: InventoryContent.getPlayerData(getInput(1))
 
-                    val inventory = buildPanel(6, false) {
-                        this.label = "<green><gray>Inventory of ${player!!.name}".asStyledComponent
-                        this.identity = PimpedSync.identity
-                        this.icon = skull(player.user)
+
+                    val targetOfflinePlayer = target?.user?.let { getOfflinePlayer(it) }
+
+                    buildPanel(6, false) {
+                        this.label = "<green><gray>Inventory of ${target!!.name}".asStyledComponent
+                        this.identity = "${target.user}"
+                        this.icon = skull(target.user)
                         //set panel contents
-                        Base64.itemStackArrayFromBase64(player.inventory).forEachIndexed { index, itemStack ->
+                        Base64.itemStackArrayFromBase64(target.inventory).forEachIndexed { index, itemStack ->
                             if (itemStack != null) {
                                 //index bezieht sich auf das Pannel
                                 this[index + 9] = itemStack
@@ -128,31 +125,37 @@ class InvseeInterChange : StructuredInterchange("invsee", buildInterchangeStruct
                             blankLabel()
                         })
 
-                        //If player is online:
+                        // If player is online:
                         onClick {
-                            val user = getOfflinePlayer(player.user)
-                            if (user.isOnline) {
-                                async(TemporalAdvice.Companion.delayed(.1.seconds)) {
-                                    sync {
-                                        getPlayer(user.uniqueId)!!.inventory.contents =
-                                            it.inventoryView.topInventory.contents!!.drop(9).toTypedArray()
-                                    }
+                            println("TRIGGER-ZONE CLICK ===============================")
+                            if ((targetOfflinePlayer != null).also { print("C1B1 = $it") } && (targetOfflinePlayer?.isOnline == true).also { println("C2B1 = $it") }) {
+                                println("B1 = true")
+                                val targetPlayer = targetOfflinePlayer!!.player!!
+
+                                println("targetPlayer ${targetPlayer.name}")
+
+                                sync(Companion.delayed(.1.seconds)) {
+                                    targetPlayer.inventory.contents =
+                                        it.origin.clickedInventory?.contents?.drop(9)?.toTypedArray() ?: emptyArray()
                                 }
+
                             }
+                            println("TRIGGER-ZONE END ===============================")
                         }
 
-                        //If player is offline
+                        // If player is offline
                         onClose {
-                            if (getPlayer(player.user)?.isOnline == false) {
-                                InventoryContent.dbRequestOfflinePlayer(
-                                    getOfflinePlayer(player.name),
-                                    it.inventory.contents?.drop(9)?.toTypedArray() as Array<ItemStack>
+                            if (targetOfflinePlayer?.isOnline == false) {
+                                InventoryContent.databasePush(
+                                    getOfflinePlayer(target.user),
+                                    it.inventory.contents?.drop(9)?.toTypedArray().forceCast()
                                 )
                             }
                         }
 
-                    }
-                    inventory.display(executor)
+
+                    }.display(executor)
+
                 }.let { time ->
 
                     text {

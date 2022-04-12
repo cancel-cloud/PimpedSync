@@ -39,9 +39,9 @@ object GeneralConfig {
     val databaseConfig: DataBaseConfig
         get() = config.database
 
-
     fun load() {
         config = config
         databaseConfig.connect()
     }
+
 }
