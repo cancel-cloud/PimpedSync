@@ -6,6 +6,8 @@ import de.cancelcloud.database.RequestType.UPDATE
 import de.cancelcloud.utils.Base64
 import de.jet.jvm.extension.classType.UUID
 import de.jet.jvm.extension.forceCast
+import de.jet.paper.extension.debugLog
+import de.jet.paper.extension.mainLog
 import de.jet.paper.extension.paper.getOfflinePlayer
 import org.bukkit.OfflinePlayer
 import org.bukkit.entity.Player
@@ -51,7 +53,7 @@ object InventoryContent {
                 inventory = it[InventoryContentTable.inventory]
             )
         }.firstOrNull().also {
-            println("DATA-RECEIVED for '$name' === $it")
+            mainLog.debugLog("DATA-RECEIVED for '$name' === $it")
         }
     }
 
@@ -93,7 +95,7 @@ object InventoryContent {
 
     fun databasePush(offlinePlayer: OfflinePlayer, inventorContent: Array<ItemStack>) = transaction(db = database) {
         val user = offlinePlayer.uniqueId
-        println("uniqueID: $user")
+        mainLog.debugLog("uniqueID: $user")
         val inventory = Base64.itemStackArrayToBase64(inventorContent)
 
         InventoryContentTable.update ({ InventoryContentTable.user eq user }) {
