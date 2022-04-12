@@ -145,13 +145,14 @@ class InvseeInterChange : StructuredInterchange("invsee", buildInterchangeStruct
 
                         // If player is offline
                         onClose {
-                            if (targetOfflinePlayer?.isOnline != true) {
+                            if (targetOfflinePlayer?.isOnline == false) {
                                 InventoryContent.databasePush(
                                     getOfflinePlayer(target.user),
                                     it.inventory.contents?.drop(9)?.toTypedArray().forceCast()
                                 )
                             }
                         }
+
 
                     }.display(executor)
 

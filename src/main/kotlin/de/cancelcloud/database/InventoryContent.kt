@@ -6,6 +6,7 @@ import de.cancelcloud.database.RequestType.UPDATE
 import de.cancelcloud.utils.Base64
 import de.jet.jvm.extension.classType.UUID
 import de.jet.jvm.extension.forceCast
+import de.jet.paper.extension.paper.getOfflinePlayer
 import org.bukkit.OfflinePlayer
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
@@ -92,11 +93,10 @@ object InventoryContent {
 
     fun databasePush(offlinePlayer: OfflinePlayer, inventorContent: Array<ItemStack>) = transaction(db = database) {
         val user = offlinePlayer.uniqueId
-        val name = offlinePlayer.name
+        println("uniqueID: $user")
         val inventory = Base64.itemStackArrayToBase64(inventorContent)
 
         InventoryContentTable.update ({ InventoryContentTable.user eq user }) {
-            it[InventoryContentTable.name] = name!!
             it[InventoryContentTable.inventory] = inventory!!
         }
 
