@@ -9,6 +9,7 @@ import de.moltenKt.core.extension.tryOrNull
 import de.moltenKt.paper.extension.display.notification
 import de.moltenKt.paper.extension.display.ui.buildPanel
 import de.moltenKt.paper.extension.display.ui.item
+import de.moltenKt.paper.extension.display.ui.set
 import de.moltenKt.paper.extension.paper.getOfflinePlayer
 import de.moltenKt.paper.extension.paper.getPlayer
 import de.moltenKt.paper.extension.paper.server
@@ -127,7 +128,7 @@ class InvseeInterChange : StructuredInterchange("invsee", buildInterchangeStruct
                                 Base64.itemStackArrayFromBase64(target.inventory).forEachIndexed { index, itemStack ->
                                     if (itemStack != null) {
                                         //index bezieht sich auf das Pannel
-                                        this@buildPanel[index + 9] = itemStack
+                                        it.inventory[index + 9] = itemStack
                                     }
                                 }
                             }

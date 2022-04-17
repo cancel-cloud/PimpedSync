@@ -61,9 +61,6 @@ tasks.test {
 tasks.shadowJar {
     archiveClassifier.set("Runnable")
     dependencies {
-        include(dependency("org.jetbrains.exposed:exposed-core:$exposedVersion"))
-        include(dependency("org.jetbrains.exposed:dao:$exposedVersion"))
-        include(dependency("org.jetbrains.exposed:exposed-jdbc:$exposedVersion"))
         include(dependency("org.postgresql:postgresql:42.3.3"))
     }
 }
