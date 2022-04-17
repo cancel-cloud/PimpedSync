@@ -2,8 +2,8 @@ package de.cancelcloud.listeners
 
 import de.cancelcloud.database.InventoryContent
 import de.cancelcloud.database.RequestType.UPDATE
-import de.jet.paper.extension.mainLog
-import de.jet.paper.structure.app.event.EventListener
+import de.moltenKt.paper.extension.mainLog
+import de.moltenKt.paper.structure.app.event.EventListener
 import org.bukkit.event.EventHandler
 import org.bukkit.event.player.PlayerQuitEvent
 import kotlin.time.DurationUnit
@@ -24,8 +24,13 @@ class QuitListener : EventListener() {
             player.inventory.clear()
 
         }.let {
-            mainLog.info("§7[§eQuitListener§7]§r Player §2${player.name}§r has been saved in §a${it.toString(
-                DurationUnit.MILLISECONDS, 2)}.")
+            mainLog.info(
+                "§7[§eQuitListener§7]§r Player §2${player.name}§r has been saved in §a${
+                    it.toString(
+                        DurationUnit.MILLISECONDS, 2
+                    )
+                }."
+            )
         }
 
     }

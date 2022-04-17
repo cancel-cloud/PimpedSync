@@ -4,24 +4,25 @@ import de.cancelcloud.PimpedCache
 import de.cancelcloud.PimpedSync
 import de.cancelcloud.database.InventoryContent
 import de.cancelcloud.utils.Base64
-import de.jet.jvm.extension.forceCast
-import de.jet.jvm.extension.tryOrNull
-import de.jet.paper.extension.display.notification
-import de.jet.paper.extension.display.ui.buildPanel
-import de.jet.paper.extension.display.ui.item
-import de.jet.paper.extension.display.ui.skull
-import de.jet.paper.extension.paper.getOfflinePlayer
-import de.jet.paper.extension.paper.getPlayer
-import de.jet.paper.extension.paper.server
-import de.jet.paper.extension.tasky.sync
-import de.jet.paper.structure.command.InterchangeUserRestriction
-import de.jet.paper.structure.command.StructuredInterchange
-import de.jet.paper.structure.command.completion.buildInterchangeStructure
-import de.jet.paper.structure.command.completion.component.CompletionAsset
-import de.jet.paper.tool.display.message.Transmission
-import de.jet.paper.tool.timing.tasky.TemporalAdvice.Companion
-import de.jet.unfold.extension.asStyledComponent
-import de.jet.unfold.text
+import de.moltenKt.core.extension.forceCast
+import de.moltenKt.core.extension.tryOrNull
+import de.moltenKt.paper.extension.display.notification
+import de.moltenKt.paper.extension.display.ui.buildPanel
+import de.moltenKt.paper.extension.display.ui.item
+import de.moltenKt.paper.extension.paper.getOfflinePlayer
+import de.moltenKt.paper.extension.paper.getPlayer
+import de.moltenKt.paper.extension.paper.server
+import de.moltenKt.paper.extension.tasky.sync
+import de.moltenKt.paper.structure.command.InterchangeUserRestriction
+import de.moltenKt.paper.structure.command.StructuredInterchange
+import de.moltenKt.paper.structure.command.completion.buildInterchangeStructure
+import de.moltenKt.paper.structure.command.completion.component.CompletionAsset
+import de.moltenKt.paper.tool.display.message.Transmission
+import de.moltenKt.paper.tool.timing.tasky.TemporalAdvice.Companion
+import de.moltenKt.unfold.extension.asStyledComponent
+import de.moltenKt.unfold.text
+import kotlinx.coroutines.launch
+import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.Material
 import org.bukkit.entity.Player
@@ -113,17 +114,24 @@ class InvseeInterChange : StructuredInterchange("invsee", buildInterchangeStruct
                     buildPanel(6, false) {
                         this.label = "<green><gray>Inventory of ${target!!.name}".asStyledComponent
                         this.identity = "${target.user}"
-                        this.icon = skull(target.user)
-                        //set panel contents
-                        Base64.itemStackArrayFromBase64(target.inventory).forEachIndexed { index, itemStack ->
-                            if (itemStack != null) {
-                                //index bezieht sich auf das Pannel
-                                this[index + 9] = itemStack
-                            }
+                        this.icon = Material.CYAN_DYE.item {
+                            this.label = Component.empty()
                         }
                         set(0..8, Material.GRAY_STAINED_GLASS_PANE.item {
                             blankLabel()
                         })
+
+                        onOpen {
+                            PimpedSync.coroutineScope.launch {
+
+                                Base64.itemStackArrayFromBase64(target.inventory).forEachIndexed { index, itemStack ->
+                                    if (itemStack != null) {
+                                        //index bezieht sich auf das Pannel
+                                        this@buildPanel[index + 9] = itemStack
+                                    }
+                                }
+                            }
+                        }
 
                         // If player is online:
                         onClick {

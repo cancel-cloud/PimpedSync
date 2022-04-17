@@ -1,8 +1,8 @@
 package de.cancelcloud
 
-import de.jet.paper.structure.app.AppCache
-import de.jet.paper.structure.app.cache.CacheDepthLevel
-import de.jet.paper.structure.app.cache.CacheDepthLevel.KILL
+import de.moltenKt.paper.structure.app.AppCache
+import de.moltenKt.paper.structure.app.cache.CacheDepthLevel
+import de.moltenKt.paper.structure.app.cache.CacheDepthLevel.KILL
 import java.util.*
 
 object PimpedCache : AppCache {

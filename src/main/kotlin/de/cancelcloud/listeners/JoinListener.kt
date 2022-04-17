@@ -3,9 +3,9 @@ package de.cancelcloud.listeners
 import de.cancelcloud.database.InventoryContent
 import de.cancelcloud.database.RequestType.INSERT
 import de.cancelcloud.utils.Base64
-import de.jet.jvm.extension.isNull
-import de.jet.paper.extension.mainLog
-import de.jet.paper.structure.app.event.EventListener
+import de.moltenKt.core.extension.isNull
+import de.moltenKt.paper.extension.mainLog
+import de.moltenKt.paper.structure.app.event.EventListener
 import net.kyori.adventure.text.Component
 import org.bukkit.event.EventHandler
 import org.bukkit.event.player.PlayerJoinEvent
@@ -24,7 +24,7 @@ class JoinListener : EventListener() {
         measureTime {
 
             //check if player exists in database
-            if(InventoryContent.getPlayerData(player.uniqueId)?.user.isNull) {
+            if (InventoryContent.getPlayerData(player.uniqueId)?.user.isNull) {
                 InventoryContent.databaseAction(player, INSERT)
             }
 
@@ -32,7 +32,14 @@ class JoinListener : EventListener() {
                 Base64.itemStackArrayFromBase64(InventoryContent.getPlayerData(player.uniqueId)!!.inventory)
 
         }.let {
-            mainLog.info("§7[§eJoinListener§7]§r §2${player.name}§r joined the server. Fetched inventory in: §a${it.toString(DurationUnit.MILLISECONDS, 2)}")
+            mainLog.info(
+                "§7[§eJoinListener§7]§r §2${player.name}§r joined the server. Fetched inventory in: §a${
+                    it.toString(
+                        DurationUnit.MILLISECONDS,
+                        2
+                    )
+                }"
+            )
         }
 
     }

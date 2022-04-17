@@ -2,11 +2,11 @@ package de.cancelcloud.config
 
 import de.cancelcloud.PimpedSync
 import de.cancelcloud.config.database.DataBaseConfig
-import de.jet.jvm.extension.data.fromJson
-import de.jet.jvm.extension.data.toJson
-import de.jet.jvm.extension.div
-import de.jet.jvm.extension.tryOrNull
-import de.jet.paper.extension.mainLog
+import de.moltenKt.core.extension.data.fromJson
+import de.moltenKt.core.extension.data.toJson
+import de.moltenKt.core.extension.div
+import de.moltenKt.core.extension.tryOrNull
+import de.moltenKt.paper.extension.mainLog
 import kotlin.io.path.createDirectories
 import kotlin.io.path.createFile
 import kotlin.io.path.notExists

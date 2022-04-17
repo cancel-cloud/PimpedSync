@@ -5,13 +5,12 @@ import de.cancelcloud.config.GeneralConfig
 import de.cancelcloud.database.InventoryContent.createTables
 import de.cancelcloud.listeners.JoinListener
 import de.cancelcloud.listeners.QuitListener
-import de.jet.jvm.tool.smart.identification.Identity
-import de.jet.paper.extension.mainLog
-import de.jet.paper.structure.app.App
-import de.jet.paper.structure.app.AppCompanion
+import de.moltenKt.core.tool.smart.identification.Identity
+import de.moltenKt.paper.extension.mainLog
+import de.moltenKt.paper.structure.app.App
+import de.moltenKt.paper.structure.app.AppCompanion
 import net.kyori.adventure.text.Component
 import org.bukkit.ChatColor
-import org.bukkit.entity.Player
 
 class PimpedSync : App() {
     override val appCache = PimpedCache
@@ -36,7 +35,7 @@ class PimpedSync : App() {
 
     override fun bye() {
 
-        server.onlinePlayers.forEach{player ->
+        server.onlinePlayers.forEach { player ->
             player.kick(Component.text(ChatColor.RED.toString() + "Server restarting!"))
         }
 

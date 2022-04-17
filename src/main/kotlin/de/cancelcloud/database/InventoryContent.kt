@@ -4,11 +4,10 @@ import de.cancelcloud.config.GeneralConfig
 import de.cancelcloud.database.RequestType.INSERT
 import de.cancelcloud.database.RequestType.UPDATE
 import de.cancelcloud.utils.Base64
-import de.jet.jvm.extension.classType.UUID
-import de.jet.jvm.extension.forceCast
-import de.jet.paper.extension.debugLog
-import de.jet.paper.extension.mainLog
-import de.jet.paper.extension.paper.getOfflinePlayer
+import de.moltenKt.core.extension.classType.UUID
+import de.moltenKt.core.extension.forceCast
+import de.moltenKt.paper.extension.debugLog
+import de.moltenKt.paper.extension.mainLog
 import org.bukkit.OfflinePlayer
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
@@ -98,7 +97,7 @@ object InventoryContent {
         mainLog.debugLog("uniqueID: $user")
         val inventory = Base64.itemStackArrayToBase64(inventorContent)
 
-        InventoryContentTable.update ({ InventoryContentTable.user eq user }) {
+        InventoryContentTable.update({ InventoryContentTable.user eq user }) {
             it[InventoryContentTable.inventory] = inventory!!
         }
 

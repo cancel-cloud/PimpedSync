@@ -7,7 +7,7 @@ plugins {
 }
 
 group = "de.cancelcloud"
-version = "1.1"
+version = "1.2"
 
 val exposedVersion: String by project
 var host = "github.com/cancel-cloud/PimpedSync"
@@ -35,9 +35,9 @@ dependencies {
 
 
     //JET
-    implementation("com.github.TheFruxz.JET:jet-jvm:1.0-PRE-6.0.1") // JET-JVM
-    implementation("com.github.TheFruxz.JET:jet-paper:1.0-PRE-6.0.1") // JET-Minecraft
-    implementation("com.github.TheFruxz.JET:jet-unfold:1.0-PRE-6.0.1") // JET-Unfold
+    compileOnly("com.github.TheFruxz.MoltenKT:moltenkt-core:1.0-PRE-7a") // MoltenKT-Core
+    compileOnly("com.github.TheFruxz.MoltenKT:moltenkt-paper:1.0-PRE-7a") // MoltenKT-Paper
+    compileOnly("com.github.TheFruxz.MoltenKT:moltenkt-unfold:1.0-PRE-7a") // MoltenKT-Unfold
 }
 
 tasks.withType<KotlinCompile> {
